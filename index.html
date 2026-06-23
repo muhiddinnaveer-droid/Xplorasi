@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xplorasi — Ujian Minat Kerjaya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Source+Sans+3:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F0EEE4;
+    --paper-raised:#F7F5EC;
+    --ink:#22281F;
+    --pencil:#8A8578;
+    --pencil-light:#C9C4B4;
+    --red:#C1502E;
+    --red-dim:#C1502E22;
+    --teal:#2D6E7E;
+    --teal-dim:#2D6E7E1A;
+    --green:#5B6E3A;
+    --green-dim:#5B6E3A1A;
+    --line:#D8D3C2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:radial-gradient(circle at 1px 1px, rgba(34,40,31,0.045) 1px, transparent 0);
+    background-size:22px 22px;
+    color:var(--ink);
+    font-family:'Source Sans 3', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{max-width:880px; margin:0 auto; padding:48px 20px 96px;}
+
+  /* ---------- Masthead ---------- */
+  .masthead{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    border-bottom:3px solid var(--ink); padding-bottom:18px; margin-bottom:6px;
+    gap:16px; flex-wrap:wrap;
+  }
+  .brand{font-family:'Lora', serif; font-style:italic; font-weight:700; font-size:42px; letter-spacing:-0.5px; line-height:1;}
+  .brand sup{font-size:14px; font-style:normal; font-weight:600;}
+  .brand-sub{font-family:'Space Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--pencil); margin-top:6px;}
+  .doc-meta{text-align:right; font-family:'Space Mono', monospace; font-size:11px; color:var(--pencil); line-height:1.6;}
+
+  .lede{font-family:'Lora', serif; font-size:16px; line-height:1.65; color:#3a4034; max-width:640px; margin:24px 0 8px;}
+  .lede b{color:var(--ink);}
+
+  /* ---------- Progress bar ---------- */
+  .progress-bar-outer{
+    position:sticky; top:0; z-index:50;
+    background:var(--paper); padding:14px 0 10px;
+    margin:0 -20px 28px; padding-left:20px; padding-right:20px;
+    border-bottom:1px solid var(--line);
+  }
+  .progress-row{display:flex; align-items:center; gap:14px;}
+  .progress-track{flex:1; height:8px; background:var(--line); border-radius:5px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--red); width:0%; transition:width .25s ease; border-radius:5px;}
+  .progress-label{font-family:'Space Mono', monospace; font-size:12px; color:var(--pencil); white-space:nowrap;}
+
+  /* ---------- Section card ---------- */
+  .sheet{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:3px;
+    box-shadow:0 1px 0 var(--line), 0 14px 28px -20px rgba(34,40,31,0.35);
+    margin-bottom:28px; overflow:hidden;
+  }
+  .sheet-head{
+    padding:18px 24px; border-bottom:1px solid var(--line);
+  }
+  .sheet-head h2{
+    font-family:'Lora', serif; font-weight:600; font-size:19px; margin:0 0 6px;
+    display:flex; align-items:baseline; gap:10px;
+  }
+  .sheet-head h2 .tag{
+    font-family:'Space Mono', monospace; font-size:11px; color:var(--teal);
+    border:1px solid var(--teal); border-radius:20px; padding:2px 9px; letter-spacing:0.05em;
+  }
+  .sheet-head p{font-size:13px; color:var(--pencil); margin:0; line-height:1.5;}
+  .sheet-body{padding:6px 24px 18px;}
+
+  /* ---------- Category groups within a section ---------- */
+  .cat-group{margin-top:18px;}
+  .cat-group:first-child{margin-top:14px;}
+  .cat-label{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Space Mono', monospace; font-size:11px; letter-spacing:0.06em;
+    color:#fff; background:var(--ink); padding:3px 10px; border-radius:3px;
+    margin-bottom:8px;
+  }
+  .item-row{
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    padding:10px 0; border-bottom:1px solid var(--line);
+  }
+  .item-row:last-child{border-bottom:none;}
+  .item-text{font-size:14.5px; line-height:1.4;}
+  .item-text .my{display:block; font-weight:500;}
+  .item-text .en{display:block; font-style:italic; color:var(--pencil); font-size:12.5px; margin-top:1px;}
+
+  .toggle{
+    display:flex; flex-shrink:0; border:1px solid var(--pencil-light); border-radius:20px; overflow:hidden;
+    font-family:'Space Mono', monospace; font-size:12px;
+  }
+  .toggle button{
+    border:none; background:#fff; padding:7px 14px; cursor:pointer; color:var(--pencil);
+    font-family:'Space Mono', monospace; font-size:12px; font-weight:700; letter-spacing:0.03em;
+  }
+  .toggle button.ya.active{background:var(--green); color:#fff;}
+  .toggle button.tidak.active{background:var(--red); color:#fff;}
+  .toggle button:not(:last-child){border-right:1px solid var(--pencil-light);}
+
+  /* ---------- Results sheets (reuse from earlier) ---------- */
+  .tally-grid{
+    display:grid; grid-template-columns: 90px repeat(6, 1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line); border-radius:2px; overflow:hidden;
+  }
+  .tally-grid .cell{
+    background:var(--paper-raised); padding:10px 6px; display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono', monospace; font-size:13px;
+  }
+  .tally-grid .cell.row-label{
+    justify-content:flex-start; font-family:'Source Sans 3', sans-serif; font-weight:600; font-size:13px; padding-left:14px;
+  }
+  .tally-grid .cell.col-head{background:var(--ink); color:var(--paper); font-weight:700; letter-spacing:0.04em;}
+  .tally-grid .cell.total-row{background:var(--red-dim); font-weight:700;}
+  .tally-grid .cell.total-row.row-label{color:var(--red);}
+  .total-value{font-size:15px; font-weight:700; color:var(--red);}
+
+  .rank-row{display:grid; grid-template-columns: 110px 1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:4px;}
+  .rank-row .cell{background:var(--paper-raised); padding:14px; font-family:'Space Mono', monospace; display:flex; align-items:center; gap:10px;}
+  .rank-row .cell.head{background:var(--ink); color:var(--paper); font-weight:700; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;}
+  .rank-badge{width:26px;height:26px;border-radius:50%; display:flex;align-items:center;justify-content:center; font-weight:700;font-size:12px; background:var(--teal); color:#fff;}
+  .rank-row .cat-letter{font-family:'Lora', serif; font-weight:700; font-size:20px; color:var(--red);}
+
+  .code-stamp{
+    margin-top:22px; border:2px dashed var(--red); border-radius:6px; padding:22px; text-align:center;
+    background:repeating-linear-gradient(135deg, var(--red-dim) 0 10px, transparent 10px 20px);
+    transform:rotate(-0.4deg);
+  }
+  .code-stamp .label{font-family:'Space Mono', monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--red);}
+  .code-letters{font-family:'Lora', serif; font-weight:700; font-size:64px; letter-spacing:0.06em; color:var(--ink); line-height:1.1; margin:4px 0 2px;}
+  .code-meaning{font-size:13px; color:#3a4034;}
+
+  .graph-wrap{display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start;}
+  .graph-svg-box{flex:0 0 320px;}
+  .legend-box{flex:1; min-width:220px;}
+  .legend-item{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:13px;}
+  .legend-item:last-child{border-bottom:none;}
+  .legend-swatch{width:12px;height:12px;border-radius:2px;flex-shrink:0;}
+  .legend-name{font-weight:600; min-width:130px;}
+  .legend-score{font-family:'Space Mono', monospace; color:var(--pencil); margin-left:auto;}
+
+  #resultsSection{display:none;}
+  #incompleteNotice{
+    font-family:'Space Mono', monospace; font-size:12px; color:var(--red);
+    background:var(--red-dim); border:1px solid var(--red); border-radius:4px;
+    padding:10px 14px; margin-bottom:20px; display:none;
+  }
+
+  .scroll-btn{
+    display:block; margin:0 auto 32px; font-family:'Space Mono', monospace; font-size:13px;
+    background:var(--ink); color:var(--paper); border:none; border-radius:24px;
+    padding:13px 28px; cursor:pointer; letter-spacing:0.04em;
+  }
+  .scroll-btn:hover{background:#3a4034;}
+
+  .colophon{
+    margin-top:40px; padding-top:18px; border-top:1px solid var(--line);
+    font-family:'Space Mono', monospace; font-size:11px; color:var(--pencil);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+  .reset-btn{
+    font-family:'Space Mono', monospace; font-size:11px; color:var(--teal); background:none;
+    border:1px solid var(--teal); border-radius:20px; padding:5px 14px; cursor:pointer; letter-spacing:0.04em;
+  }
+  .reset-btn:hover{background:var(--teal-dim);}
+
+  @media (max-width: 600px){
+    .brand{font-size:32px;}
+    .doc-meta{text-align:left; font-size:10px;}
+    .item-row{flex-direction:column; align-items:flex-start; gap:8px;}
+    .toggle{align-self:flex-start;}
+    .tally-grid{grid-template-columns: 64px repeat(6, 1fr);}
+    .tally-grid .cell{padding:8px 3px; font-size:11px;}
+    .code-letters{font-size:46px;}
+    .rank-row{grid-template-columns: 80px 1fr 1fr;}
+    .graph-wrap{flex-direction:column;}
+    .graph-svg-box{flex:0 0 auto; width:100%; max-width:320px; margin:0 auto;}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none !important; animation:none !important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <div class="brand">Xplorasi<sup>®</sup></div>
+      <div class="brand-sub">inspirasi kerjaya impian</div>
+    </div>
+    <div class="doc-meta">No. 09012080 — Class 41 (2014)<br>Ujian Minat Kerjaya · versi digital</div>
+  </div>
+
+  <p class="lede">
+    <b>Xplorasi</b> adalah ujian mengenai minat kerjaya anda. Jawab dengan ikhlas —
+    tiada jawapan betul atau salah. Untuk setiap perkara, tandakan <b>YA</b> jika
+    anda suka/boleh/berminat melakukannya, atau <b>TIDAK</b> jika sebaliknya.
+    Ujian ini mengandungi 3 bahagian (A, B, C), 90 item kesemuanya.
+  </p>
+
+  <div class="progress-bar-outer">
+    <div class="progress-row">
+      <span class="progress-label" id="progressLabel">0 / 90 dijawab</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <button class="reset-btn" id="resetBtn">↺ Reset</button>
+    </div>
+  </div>
+
+  <!-- ===================== SECTION A ===================== -->
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2>Seksyen A <span class="tag">MINAT / LIKE</span></h2>
+      <p>Tandakan YA pada perkara yang anda suka lakukan, atau TIDAK jika anda tidak suka melakukannya.</p>
+    </div>
+    <div class="sheet-body" id="sectionA"></div>
+  </div>
+
+  <!-- ===================== SECTION B ===================== -->
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2>Seksyen B <span class="tag">KEBOLEHAN / CAN DO</span></h2>
+      <p>Tandakan YA pada perkara yang anda boleh lakukan, atau TIDAK jika anda tidak boleh melakukannya.</p>
+    </div>
+    <div class="sheet-body" id="sectionB"></div>
+  </div>
+
+  <!-- ===================== SECTION C ===================== -->
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2>Seksyen C <span class="tag">CITA-CITA / INTEREST</span></h2>
+      <p>Tandakan YA pada perkara yang anda minat menjadi/lakukan, atau TIDAK jika tidak berminat.</p>
+    </div>
+    <div class="sheet-body" id="sectionC"></div>
+  </div>
+
+  <button class="scroll-btn" id="computeBtn">Kira skor saya ↓</button>
+
+  <div id="incompleteNotice"></div>
+
+  <!-- ===================== RESULTS ===================== -->
+  <div id="resultsSection">
+
+    <div class="sheet">
+      <div class="sheet-head"><h2>Jadual Skor <span class="tag">DATA SDS</span></h2></div>
+      <div class="sheet-body">
+        <div class="tally-grid" id="tallyGrid">
+          <div class="cell col-head">BAHAGIAN</div>
+          <div class="cell col-head">R</div>
+          <div class="cell col-head">I</div>
+          <div class="cell col-head">A</div>
+          <div class="cell col-head">S</div>
+          <div class="cell col-head">E</div>
+          <div class="cell col-head">K</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-head"><h2>Kedudukan Skor Tertinggi <span class="tag">RANKING</span></h2></div>
+      <div class="sheet-body">
+        <div class="rank-row">
+          <div class="cell head">Kedudukan</div><div class="cell head">Skor</div><div class="cell head">Kategori</div>
+        </div>
+        <div class="rank-row" id="rankRows"></div>
+        <div class="code-stamp">
+          <div class="label">Kod Tiga Huruf · Three Letter Code</div>
+          <div class="code-letters" id="codeLetters">— — —</div>
+          <div class="code-meaning" id="codeMeaning"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-head"><h2>Graf Profil Individu <span class="tag">PROFILE</span></h2></div>
+      <div class="sheet-body">
+        <div class="graph-wrap">
+          <div class="graph-svg-box"><svg id="radarSvg" viewBox="0 0 320 320" width="100%" height="100%"></svg></div>
+          <div class="legend-box" id="legendBox"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="colophon">
+    <span>Xplorasi® — Hak cipta terpelihara, Amla Hj. Mohd. Salleh 2012</span>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  // ---------- Item bank: exact text from the original test ----------
+  const BANK = {
+    A: [
+      {cat:"R", my:"Saya suka berkebun", en:"I love gardening"},
+      {cat:"R", my:"Saya suka sukan lasak", en:"I love adventure sports"},
+      {cat:"R", my:"Saya suka bekerja menggunakan mesin", en:"I like to work using machines"},
+      {cat:"R", my:"Saya suka permainan gelanggang", en:"I love arena/outdoor games"},
+      {cat:"R", my:"Saya suka membaiki komputer", en:"I like repairing computer"},
+      {cat:"I", my:"Saya suka memahami program komputer", en:"I like to understand the computer program"},
+      {cat:"I", my:"Saya suka permainan indoor (seperti catur, scrable)", en:"I love indoor games such as scrabble, chess"},
+      {cat:"I", my:"Saya suka membaca bahan berunsur sains", en:"I love to read science oriented material"},
+      {cat:"I", my:"Saya suka membuat kajian/penyelidikan", en:"I like to study and do research"},
+      {cat:"I", my:"Saya suka memerhati alam sekeliling", en:"I like to observe the environment"},
+      {cat:"A", my:"Saya suka membaca komik", en:"I love to read comics"},
+      {cat:"A", my:"Saya suka melakar rekaan baju", en:"I love sketching shirt designs"},
+      {cat:"A", my:"Saya suka melihat keindahan alam", en:"I love seeing the beauty of nature"},
+      {cat:"A", my:"Saya suka mereka lanskap", en:"I love landscapes designing"},
+      {cat:"A", my:"Saya suka menulis cerpen / novel / sajak", en:"I love writing short stories / novels / poems"},
+      {cat:"S", my:"Saya suka berbual dengan rakan-rakan", en:"I love chatting with friends"},
+      {cat:"S", my:"Saya suka memberi pertolongan", en:"I like to help others"},
+      {cat:"S", my:"Saya suka bersukan", en:"I love sports"},
+      {cat:"S", my:"Saya suka bersiar-siar", en:"I love sightseeing"},
+      {cat:"S", my:"Saya suka menghadiri majlis keramaian", en:"I love attending gatherings"},
+      {cat:"E", my:"Saya suka mempengaruhi orang lain", en:"I like to influence others"},
+      {cat:"E", my:"Saya suka berhujah", en:"I love to argue/debate"},
+      {cat:"E", my:"Saya suka berniaga", en:"I love to do business"},
+      {cat:"E", my:"Saya suka persaingan", en:"I love competition"},
+      {cat:"E", my:"Saya suka memimpin", en:"I like to lead"},
+      {cat:"K", my:"Saya suka mengemas rumah/pejabat", en:"I love to keep the house/office tidy"},
+      {cat:"K", my:"Saya suka melakukan kerja rutin", en:"I love doing routine work"},
+      {cat:"K", my:"Saya suka ikut peraturan", en:"I like to follow the rules"},
+      {cat:"K", my:"Saya suka bekerja sendirian", en:"I prefer to work alone"},
+      {cat:"K", my:"Saya suka menyimpan rekod dan data", en:"I like to keep records and data"}
+    ],
+    B: [
+      {cat:"R", my:"Saya boleh membaiki enjin kenderaan", en:"I can repair vehicles engine"},
+      {cat:"R", my:"Saya boleh berkebun atau bercucuk tanam", en:"I can gardening or farming"},
+      {cat:"R", my:"Saya boleh menggunakan mesin fotostat", en:"I can use the photocopier"},
+      {cat:"R", my:"Saya boleh membuat kerja membina bangunan", en:"I can make the building work"},
+      {cat:"R", my:"Saya boleh membaiki peralatan elektrik", en:"I can repair electrical equipment"},
+      {cat:"I", my:"Saya boleh memberi idea yang bernas", en:"I can give ideas"},
+      {cat:"I", my:"Saya boleh membina laman web/blog", en:"I can build a website / blog"},
+      {cat:"I", my:"Saya boleh mengenal pasti habitat haiwan", en:"I can identify habitat"},
+      {cat:"I", my:"Saya boleh menulis rencana sains", en:"I can write a scientific article"},
+      {cat:"I", my:"Saya boleh menganalisis data", en:"I can analyze the data"},
+      {cat:"A", my:"Saya boleh mengukir", en:"I can carve"},
+      {cat:"A", my:"Saya boleh mereka landskap", en:"I can design a landscape"},
+      {cat:"A", my:"Saya boleh mencipta rekaan pakaian", en:"I can create clothing designs"},
+      {cat:"A", my:"Saya boleh menulis sajak/novel/cerpen", en:"I could write a poem / novel / short story"},
+      {cat:"A", my:"Saya boleh mereka cipta model kereta", en:"I could invent a car model"},
+      {cat:"S", my:"Saya boleh berinteraksi dengan semua orang", en:"I can interact with everyone"},
+      {cat:"S", my:"Saya boleh membantu dan memberi pertolongan", en:"I can help and give help to others"},
+      {cat:"S", my:"Saya boleh menyelesaikan konflik", en:"I can resolve conflicts"},
+      {cat:"S", my:"Saya boleh menjadi pendengar yang baik", en:"I can be a good listener"},
+      {cat:"S", my:"Saya boleh menyesuaikan diri dalam majlis keramaian", en:"I can adapt to gatherings"},
+      {cat:"E", my:"Saya boleh berniaga", en:"I can trade"},
+      {cat:"E", my:"Saya boleh membuat kerja yang mencabar", en:"I can make challenging jobs"},
+      {cat:"E", my:"Saya boleh mengambil risiko", en:"I can take risks"},
+      {cat:"E", my:"Saya boleh menjadi ketua/pemimpin", en:"I can be the head / leader"},
+      {cat:"E", my:"Saya boleh bersaing dengan orang lain", en:"I can compete with others"},
+      {cat:"K", my:"Saya boleh mengemas rumah/pejabat", en:"I can keep the house/office tidy"},
+      {cat:"K", my:"Saya boleh membuat kerja rutin", en:"I can do the routine work"},
+      {cat:"K", my:"Saya boleh mengikut peraturan", en:"I can follow the rules"},
+      {cat:"K", my:"Saya boleh bekerja tanpa gangguan", en:"I can work without interruption"},
+      {cat:"K", my:"Saya boleh mengaudit data/rekod", en:"I can audit the data / records"}
+    ],
+    C: [
+      {cat:"R", my:"Saya berminat menjadi seorang penternak", en:"I am interested in becoming a farmer"},
+      {cat:"R", my:"Saya berminat menjadi pendaki gunung profesional", en:"I am interested in becoming a professional mountain climber"},
+      {cat:"R", my:"Saya berminat menjadi seorang mekanik/juruteknik", en:"I am interested in being a mechanic / technician"},
+      {cat:"R", my:"Saya berminat menjadi seorang jurutera", en:"I am interested to be an engineer"},
+      {cat:"R", my:"Saya berminat menjadi seorang juruteknik computer", en:"I am interested to become a computer technician"},
+      {cat:"I", my:"Saya berminat menjadi seorang doktor veterinar", en:"I am interested in becoming a veterinarian"},
+      {cat:"I", my:"Saya berminat menjadi seorang penyelidik", en:"I am interested in becoming a researcher"},
+      {cat:"I", my:"Saya berminat menjadi seorang pakar pemakanan", en:"I am interested to be a dietician"},
+      {cat:"I", my:"Saya berminat menjadi seorang pakar perubatan kanak-kanak", en:"I am interested to become children's physicians"},
+      {cat:"I", my:"Saya berminat menjadi ahli psikologi", en:"I am interested to be a psychologist"},
+      {cat:"A", my:"Saya berminat menjadi seorang pengarang novel", en:"I am interested to be a novelist"},
+      {cat:"A", my:"Saya berminat menjadi seorang pemuzik", en:"I am interested to be a musician"},
+      {cat:"A", my:"Saya berminat menjadi seorang arkitek", en:"I am interested to be an architect"},
+      {cat:"A", my:"Saya berminat menjadi seorang pereka fesyen", en:"I am interested to be a fashion designer"},
+      {cat:"A", my:"Saya berminat menjadi seorang pereka iklan", en:"I am interested to be an advertisement designer"},
+      {cat:"S", my:"Saya berminat menjadi sukarelawan", en:"I am interested to be a volunteer"},
+      {cat:"S", my:"Saya berminat menjadi jururawat", en:"I am interested to be a nurse"},
+      {cat:"S", my:"Saya berminat menjadi pendidik", en:"I am interested to be an educator"},
+      {cat:"S", my:"Saya berminat menjadi pemandu pelancong", en:"I am interested to be a tourist guide"},
+      {cat:"S", my:"Saya berminat menjadi kaunselor", en:"I am interested to be a counsellor"},
+      {cat:"E", my:"Saya berminat menjadi pengurus", en:"I am interested to be a manager"},
+      {cat:"E", my:"Saya berminat menjadi jurujual/peniaga/usahawan", en:"I am interested to be a salesman/ businessman/ entrepreneur"},
+      {cat:"E", my:"Saya berminat menjadi ahli politik", en:"I am interested to be a politician"},
+      {cat:"E", my:"Saya berminat menjadi peguam", en:"I am interested to be a lawyer"},
+      {cat:"E", my:"Saya berminat menjadi kontraktor", en:"I am interested to be a contractor"},
+      {cat:"K", my:"Saya berminat menjadi setiausaha", en:"I am interested to be a secretary"},
+      {cat:"K", my:"Saya berminat menjadi juruwang", en:"I am interested to be a cashier"},
+      {cat:"K", my:"Saya berminat menjadi operator pengeluaran", en:"I am interested to be a production operator"},
+      {cat:"K", my:"Saya berminat menjadi pengaturcara program komputer", en:"I am interested to be a computer programmer"},
+      {cat:"K", my:"Saya berminat menjadi pustakawan", en:"I am interested to be a librarian"}
+    ]
+  };
+
+  const CATS = ["R","I","A","S","E","K"];
+  const CAT_NAMES = {R:"Realistic", I:"Investigative", A:"Artistic", S:"Social", E:"Enterprising", K:"Conventional"};
+  const CAT_COLORS = {R:"#8A8578", I:"#2D6E7E", A:"#9C6B30", S:"#C1502E", E:"#5B6E3A", K:"#22281F"};
+  const TOTAL_ITEMS = 90;
+
+  const answers = {}; // key "A-0" -> "ya" | "tidak"
+
+  function buildSection(sectionKey, containerId){
+    const container = document.getElementById(containerId);
+    let currentCat = null;
+    let groupDiv = null;
+    BANK[sectionKey].forEach((item, idx)=>{
+      if(item.cat !== currentCat){
+        currentCat = item.cat;
+        groupDiv = document.createElement('div');
+        groupDiv.className = 'cat-group';
+        const label = document.createElement('div');
+        label.className = 'cat-label';
+        label.textContent = currentCat + " — " + CAT_NAMES[currentCat];
+        groupDiv.appendChild(label);
+        container.appendChild(groupDiv);
+      }
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      const textDiv = document.createElement('div');
+      textDiv.className = 'item-text';
+      textDiv.innerHTML = `<span class="my">${item.my}</span><span class="en">${item.en}</span>`;
+      const toggle = document.createElement('div');
+      toggle.className = 'toggle';
+      const key = sectionKey + "-" + idx;
+      const yaBtn = document.createElement('button');
+      yaBtn.textContent = 'YA';
+      yaBtn.className = 'ya';
+      const noBtn = document.createElement('button');
+      noBtn.textContent = 'TIDAK';
+      noBtn.className = 'tidak';
+      yaBtn.addEventListener('click', ()=> setAnswer(key, 'ya', yaBtn, noBtn));
+      noBtn.addEventListener('click', ()=> setAnswer(key, 'tidak', yaBtn, noBtn));
+      toggle.appendChild(yaBtn); toggle.appendChild(noBtn);
+      row.appendChild(textDiv); row.appendChild(toggle);
+      groupDiv.appendChild(row);
+    });
+  }
+
+  function setAnswer(key, val, yaBtn, noBtn){
+    answers[key] = val;
+    yaBtn.classList.toggle('active', val === 'ya');
+    noBtn.classList.toggle('active', val === 'tidak');
+    updateProgress();
+  }
+
+  function updateProgress(){
+    const answered = Object.keys(answers).length;
+    document.getElementById('progressLabel').textContent = answered + " / " + TOTAL_ITEMS + " dijawab";
+    document.getElementById('progressFill').style.width = (answered/TOTAL_ITEMS*100) + "%";
+  }
+
+  buildSection('A', 'sectionA');
+  buildSection('B', 'sectionB');
+  buildSection('C', 'sectionC');
+  updateProgress();
+
+  // ---------- Scoring ----------
+  function computeTotals(){
+    const bySection = {A:{R:0,I:0,A:0,S:0,E:0,K:0}, B:{R:0,I:0,A:0,S:0,E:0,K:0}, C:{R:0,I:0,A:0,S:0,E:0,K:0}};
+    ['A','B','C'].forEach(section=>{
+      BANK[section].forEach((item, idx)=>{
+        const key = section + "-" + idx;
+        if(answers[key] === 'ya'){
+          bySection[section][item.cat] += 1;
+        }
+      });
+    });
+    return bySection;
+  }
+
+  function renderTallyGrid(bySection){
+    const grid = document.getElementById('tallyGrid');
+    // remove old rows beyond header (7 cells)
+    while(grid.children.length > 7) grid.removeChild(grid.lastChild);
+
+    ['A','B','C'].forEach(section=>{
+      const label = document.createElement('div');
+      label.className = 'cell row-label';
+      label.textContent = "Bahagian " + section;
+      grid.appendChild(label);
+      CATS.forEach(cat=>{
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.textContent = bySection[section][cat];
+        grid.appendChild(cell);
+      });
+    });
+    const totalLabel = document.createElement('div');
+    totalLabel.className = 'cell row-label total-row';
+    totalLabel.textContent = 'JUMLAH';
+    grid.appendChild(totalLabel);
+
+    const totals = {R:0,I:0,A:0,S:0,E:0,K:0};
+    CATS.forEach(cat=>{
+      totals[cat] = bySection.A[cat] + bySection.B[cat] + bySection.C[cat];
+      const cell = document.createElement('div');
+      cell.className = 'cell total-row';
+      const span = document.createElement('span');
+      span.className = 'total-value';
+      span.textContent = totals[cat];
+      cell.appendChild(span);
+      grid.appendChild(cell);
+    });
+    return totals;
+  }
+
+  function drawRadar(totals){
+    const maxScore = 15;
+    const cx = 160, cy = 160, R = 120;
+    const n = CATS.length;
+    const angleFor = i => (Math.PI * 2 * i / n) - Math.PI/2;
+    let svgContent = '';
+    [0.25,0.5,0.75,1].forEach(f=>{
+      let pts = [];
+      for(let i=0;i<n;i++){
+        const a = angleFor(i);
+        pts.push((cx + R*f*Math.cos(a)) + ',' + (cy + R*f*Math.sin(a)));
+      }
+      svgContent += `<polygon points="${pts.join(' ')}" fill="none" stroke="#D8D3C2" stroke-width="1"/>`;
+    });
+    for(let i=0;i<n;i++){
+      const a = angleFor(i);
+      const x2 = cx + R*Math.cos(a), y2 = cy + R*Math.sin(a);
+      svgContent += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#D8D3C2" stroke-width="1"/>`;
+      const lx = cx + (R+22)*Math.cos(a), ly = cy + (R+22)*Math.sin(a);
+      svgContent += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-family="Lora, serif" font-weight="700" font-size="15" fill="#22281F">${CATS[i]}</text>`;
+    }
+    let dataPts = [];
+    let markers = '';
+    for(let i=0;i<n;i++){
+      const cat = CATS[i];
+      const val = Math.max(0, Math.min(maxScore, totals[cat]));
+      const f = val / maxScore;
+      const a = angleFor(i);
+      const x = cx + R*f*Math.cos(a), y = cy + R*f*Math.sin(a);
+      dataPts.push(x+','+y);
+      markers += `<circle cx="${x}" cy="${y}" r="5" fill="${CAT_COLORS[cat]}" stroke="#F7F5EC" stroke-width="2"/>`;
+    }
+    svgContent += `<polygon points="${dataPts.join(' ')}" fill="#C1502E" fill-opacity="0.18" stroke="#C1502E" stroke-width="2.5" stroke-linejoin="round"/>`;
+    svgContent += markers;
+    document.getElementById('radarSvg').innerHTML = svgContent;
+  }
+
+  function renderLegend(sorted){
+    const legendBox = document.getElementById('legendBox');
+    legendBox.innerHTML = '';
+    sorted.forEach(([cat,val])=>{
+      const row = document.createElement('div');
+      row.className = 'legend-item';
+      row.innerHTML = `<span class="legend-swatch" style="background:${CAT_COLORS[cat]}"></span>
+        <span class="legend-name">${cat} — ${CAT_NAMES[cat]}</span>
+        <span class="legend-score">${val}</span>`;
+      legendBox.appendChild(row);
+    });
+  }
+
+  function renderResults(){
+    const bySection = computeTotals();
+    const totals = renderTallyGrid(bySection);
+    const sorted = Object.entries(totals).sort((a,b)=> b[1]-a[1]);
+
+    const rankRows = document.getElementById('rankRows');
+    rankRows.innerHTML = '';
+    const medals = ['1','2','3'];
+    sorted.slice(0,3).forEach(([cat,val], idx)=>{
+      const c1 = document.createElement('div'); c1.className='cell';
+      c1.innerHTML = `<span class="rank-badge">${medals[idx]}</span>`;
+      const c2 = document.createElement('div'); c2.className='cell'; c2.textContent = val;
+      const c3 = document.createElement('div'); c3.className='cell';
+      c3.innerHTML = `<span class="cat-letter">${cat}</span>&nbsp;${CAT_NAMES[cat]}`;
+      rankRows.appendChild(c1); rankRows.appendChild(c2); rankRows.appendChild(c3);
+    });
+
+    const code = sorted.slice(0,3).map(x=>x[0]).join('');
+    document.getElementById('codeLetters').innerHTML = code.split('').map(l=>`<span>${l}</span>`).join('');
+    const names = sorted.slice(0,3).map(([cat])=> CAT_NAMES[cat]).join(' · ');
+    document.getElementById('codeMeaning').textContent = sorted[0][1] === 0
+      ? 'Tiada skor — sila jawab soalan di atas.'
+      : `Profil minat utama: ${names}`;
+
+    drawRadar(totals);
+    renderLegend(sorted);
+
+    document.getElementById('resultsSection').style.display = 'block';
+    document.getElementById('resultsSection').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  // ---------- Google Sheets submission (iframe/form POST — works on Google Sites) ----------
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwjWpHJgJXwJBs9y2XCkRBZcttDkFSMtmeHRWUWgqmH-9Rxf17jySHHopKu8So_zePZ/exec";
+
+  function submitToSheets(payload) {
+    // Build query string from payload
+    const params = Object.entries(payload)
+      .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
+      .join('&');
+
+    // Use a hidden iframe — avoids Google Sites fetch() restrictions
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.name = 'hidden_submit_' + Date.now();
+    document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = SCRIPT_URL;
+    form.target = iframe.name;
+    form.style.display = 'none';
+
+    Object.entries(payload).forEach(([k, v]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = k;
+      input.value = v;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+
+    // Clean up after 5 seconds
+    setTimeout(() => {
+      document.body.removeChild(form);
+      document.body.removeChild(iframe);
+    }, 5000);
+  }
+
+  document.getElementById('computeBtn').addEventListener('click', ()=>{
+    const answered = Object.keys(answers).length;
+    const notice = document.getElementById('incompleteNotice');
+    if(answered < TOTAL_ITEMS){
+      notice.style.display = 'block';
+      notice.textContent = `Anda masih ada ${TOTAL_ITEMS - answered} soalan yang belum dijawab. Skor akan dikira berdasarkan jawapan semasa.`;
+    } else {
+      notice.style.display = 'none';
+    }
+    renderResults();
+
+    // --- Compute totals and submit ---
+    const bySection = computeTotals();
+    const totals = {R:0,I:0,A:0,S:0,E:0,K:0};
+    CATS.forEach(cat => {
+      totals[cat] = bySection.A[cat] + bySection.B[cat] + bySection.C[cat];
+    });
+    const sorted = Object.entries(totals).sort((a,b)=> b[1]-a[1]);
+    const topCode = sorted.slice(0,3).map(x=>x[0]).join('');
+
+    const payload = {
+      R: totals.R,
+      I: totals.I,
+      A: totals.A,
+      S: totals.S,
+      E: totals.E,
+      K: totals.K,
+      topCode: topCode,
+      answersA: JSON.stringify(Object.fromEntries(Object.entries(answers).filter(([k])=>k.startsWith('A-')))),
+      answersB: JSON.stringify(Object.fromEntries(Object.entries(answers).filter(([k])=>k.startsWith('B-')))),
+      answersC: JSON.stringify(Object.fromEntries(Object.entries(answers).filter(([k])=>k.startsWith('C-')))),
+      totalAnswered: answered
+    };
+
+    submitToSheets(payload);
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    if(!confirm('Reset semua jawapan?')) return;
+    Object.keys(answers).forEach(k=> delete answers[k]);
+    document.querySelectorAll('.toggle button').forEach(b=> b.classList.remove('active'));
+    updateProgress();
+    document.getElementById('resultsSection').style.display = 'none';
+    document.getElementById('incompleteNotice').style.display = 'none';
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+})();
+</script>
+</body>
+</html>
