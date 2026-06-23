@@ -165,6 +165,39 @@
   }
   .scroll-btn:hover{background:#3a4034;}
 
+  /* ---------- Demographic form ---------- */
+  .demo-section{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:3px;
+    box-shadow:0 1px 0 var(--line), 0 14px 28px -20px rgba(34,40,31,0.35);
+    margin-bottom:28px; overflow:hidden;
+  }
+  .demo-section .sheet-head{ padding:18px 24px; border-bottom:1px solid var(--line); }
+  .demo-section .sheet-body{ padding:18px 24px; }
+  .demo-field{ margin-bottom:18px; }
+  .demo-field label{
+    display:block; font-family:'Space Mono', monospace; font-size:11px;
+    letter-spacing:0.06em; text-transform:uppercase; color:var(--pencil);
+    margin-bottom:6px;
+  }
+  .demo-field input{
+    width:100%; padding:10px 14px; border:1px solid var(--line);
+    border-radius:3px; background:var(--paper); color:var(--ink);
+    font-family:'Source Sans 3', sans-serif; font-size:15px;
+    outline:none; transition:border-color .2s;
+  }
+  .demo-field input:focus{ border-color:var(--teal); }
+  .demo-field input.error{ border-color:var(--red); }
+  .demo-error{ color:var(--red); font-size:12px; margin-top:4px; display:none; }
+  .start-btn{
+    display:block; width:100%; padding:14px;
+    background:var(--ink); color:#fff; border:none; border-radius:3px;
+    font-family:'Space Mono', monospace; font-size:13px; letter-spacing:0.06em;
+    cursor:pointer; text-transform:uppercase; margin-top:8px;
+    transition:opacity .2s;
+  }
+  .start-btn:hover{ opacity:0.85; }
+  #quizArea{ display:none; }
+
   .colophon{
     margin-top:40px; padding-top:18px; border-top:1px solid var(--line);
     font-family:'Space Mono', monospace; font-size:11px; color:var(--pencil);
@@ -209,6 +242,40 @@
     Ujian ini mengandungi 3 bahagian (A, B, C), 90 item kesemuanya.
   </p>
 
+  <!-- ===================== DEMOGRAPHIC FORM ===================== -->
+  <div class="demo-section" id="demoSection">
+    <div class="sheet-head">
+      <h2>Maklumat Diri <span class="tag">DEMOGRAFI</span></h2>
+      <p>Sila lengkapkan maklumat di bawah sebelum memulakan ujian.</p>
+    </div>
+    <div class="sheet-body">
+      <div class="demo-field">
+        <label>Umur / Age</label>
+        <input type="number" id="demoAge" placeholder="Contoh: 17" min="10" max="99">
+        <div class="demo-error" id="demoAgeErr">Sila masukkan umur anda.</div>
+      </div>
+      <div class="demo-field">
+        <label>Jantina / Gender</label>
+        <input type="text" id="demoGender" placeholder="Contoh: Lelaki / Perempuan">
+        <div class="demo-error" id="demoGenderErr">Sila masukkan jantina anda.</div>
+      </div>
+      <div class="demo-field">
+        <label>Bangsa / Race</label>
+        <input type="text" id="demoRace" placeholder="Contoh: Melayu, Cina, India...">
+        <div class="demo-error" id="demoRaceErr">Sila masukkan bangsa anda.</div>
+      </div>
+      <div class="demo-field">
+        <label>Kursus / Course</label>
+        <input type="text" id="demoCourse" placeholder="Contoh: Sains Komputer, Perakaunan...">
+        <div class="demo-error" id="demoCourseErr">Sila masukkan kursus anda.</div>
+      </div>
+      <button class="start-btn" id="startQuizBtn">Mulakan Ujian →</button>
+    </div>
+  </div>
+
+  <!-- ===================== QUIZ AREA ===================== -->
+  <div id="quizArea">
+
   <div class="progress-bar-outer">
     <div class="progress-row">
       <span class="progress-label" id="progressLabel">0 / 90 dijawab</span>
@@ -247,6 +314,8 @@
   <button class="scroll-btn" id="computeBtn">Kira skor saya ↓</button>
 
   <div id="incompleteNotice"></div>
+
+  </div><!-- end quizArea -->
 
   <!-- ===================== RESULTS ===================== -->
   <div id="resultsSection">
@@ -594,8 +663,43 @@
     document.getElementById('resultsSection').scrollIntoView({behavior:'smooth', block:'start'});
   }
 
+  // ---------- Demographic gate ----------
+  const demoData = { age:'', gender:'', race:'', course:'' };
+
+  document.getElementById('startQuizBtn').addEventListener('click', ()=>{
+    const age    = document.getElementById('demoAge').value.trim();
+    const gender = document.getElementById('demoGender').value.trim();
+    const race   = document.getElementById('demoRace').value.trim();
+    const course = document.getElementById('demoCourse').value.trim();
+
+    let valid = true;
+    const fields = [
+      { val: age,    errId: 'demoAgeErr',    inputId: 'demoAge' },
+      { val: gender, errId: 'demoGenderErr', inputId: 'demoGender' },
+      { val: race,   errId: 'demoRaceErr',   inputId: 'demoRace' },
+      { val: course, errId: 'demoCourseErr', inputId: 'demoCourse' },
+    ];
+    fields.forEach(f => {
+      const errEl   = document.getElementById(f.errId);
+      const inputEl = document.getElementById(f.inputId);
+      if(!f.val){ valid = false; errEl.style.display = 'block'; inputEl.classList.add('error'); }
+      else       { errEl.style.display = 'none';  inputEl.classList.remove('error'); }
+    });
+
+    if(!valid) return;
+
+    demoData.age    = age;
+    demoData.gender = gender;
+    demoData.race   = race;
+    demoData.course = course;
+
+    document.getElementById('demoSection').style.display = 'none';
+    document.getElementById('quizArea').style.display = 'block';
+    window.scrollTo({top: 0, behavior:'smooth'});
+  });
+
   // ---------- Google Sheets submission (iframe/form POST — works on Google Sites) ----------
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyGtl05wUPaFWRx_zI1rAINQW8bybCPkDfGmYksnKV_Q1IcW1nYs7DIDDGht1NO0-h/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby0oZlPwFq87Ig1soaHTw0OnkKzbW1I_cQx2MWNe6Ha-yM2L_JgkcaX1pAroNI4UCdl/exec";
 
   function submitToSheets(payload) {
     // Build query string from payload
@@ -654,6 +758,10 @@
     const topCode = sorted.slice(0,3).map(x=>x[0]).join('');
 
     const payload = {
+      age: demoData.age,
+      gender: demoData.gender,
+      race: demoData.race,
+      course: demoData.course,
       R: totals.R,
       I: totals.I,
       A: totals.A,
